@@ -14,6 +14,18 @@ filePath=""
 cnpmAdd=""
 vueAdd=""
 
+function createSoftL(){
+    fileAddr=""
+    sysAddr=""
+    fileAddr=$1
+    sysAddr=$2
+    if [ -d $sysAddr ];then
+	echo $sysAddr" is exist, now overwrite it"
+	rm -rf $sysAddr
+    fi
+ln -s $fileAddr $sysAddr
+}
+
 #trick for check input string is empty or not !!!!!!
 read -p "please input NodeJs download address or use default address" InputAdd
 if [ "X${InputAdd}" != "X" ];then
@@ -46,12 +58,12 @@ nodeAdd=$pwd"/"$filePath"/bin/node"
 npmAdd=$pwd"/"$filePath"/bin/npm"
 vueAdd=$pwd"/"$filePath"/bin/vue"
 
-ln -s $nodeAdd /usr/local/bin/node
-ln -s $npmAdd /usr/local/bin/npm
+createSoftL $nodeAdd "/usr/local/bin/node"
+createSoftL $npmAdd "/usr/local/bin/npm"
 npm install -g cnpm --registry=https://registry.npm.taobao.org
 
 cnpmAdd=$pwd"/"$filePath"/bin/cnpm"
-ln -s $cnpmAdd /usr/local/bin/cnpm
+createSoftL $cnpmAdd "/usr/local/bin/cnpm"
 
 #check the cnpm install success or not
 if [ $? -ne 0 ]; then 
@@ -71,8 +83,15 @@ else
     echo -e "\033[32m vue Install success!" "\033[0m"
 fi
 
-ln -s $vueAdd /usr/local/bin/vue
+createSoftL $vueAdd "/usr/local/bin/vue"
 #set fireWall rules open 8080 port
 firewall-cmd --permanent --add-port=8080/tcp
 firewall-cmd --permanent --add-port=8080-8085/tcp
 firewall-cmd --reload
+
+if [ $? -ne 0 ]; then
+    echo -e "\033[32m somthing goes wrong during running time program exit""\033[0m"
+    exit 
+else
+    echo -e "\033[32m congradulations! All install success" "\033[0m" 
+fi
