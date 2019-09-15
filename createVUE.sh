@@ -19,7 +19,7 @@ function createSoftL(){
     sysAddr=""
     fileAddr=$1
     sysAddr=$2
-    if [ -d $sysAddr ];then
+    if [ -L $sysAddr ];then
 	echo $sysAddr" is exist, now overwrite it"
 	rm -rf $sysAddr
     fi
@@ -49,7 +49,7 @@ fi
 fileName=`echo ${NodeJsAdd##*/}`
 echo $fileName
 tar -xvf $fileName
-chmod 777 $fileName
+chmod 777 $filePath
 
 #create soft link
 filePath=${fileName%.*}
@@ -87,7 +87,12 @@ createSoftL $vueAdd "/usr/local/bin/vue"
 #set fireWall rules open 8080 port
 firewall-cmd --permanent --add-port=8080/tcp
 firewall-cmd --permanent --add-port=8080-8085/tcp
+firewall-cmd --permanent --add-port=80/tcp
 firewall-cmd --reload
+
+#delete Unuseful file
+rm -rf $filename
+
 
 if [ $? -ne 0 ]; then
     echo -e "\033[32m somthing goes wrong during running time program exit""\033[0m"
